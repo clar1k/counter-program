@@ -39,6 +39,12 @@ pub mod counter_program {
         return Ok(());
     }
 
+    pub fn increment_separate_counter(ctx: Context<IncrementSeparateCounter>) -> Result<()> {
+        ctx.accounts.counter.count += 1;
+        msg!("Successfully separate counter for the {}", ctx.accounts.signer.key());
+        return Ok(());
+    }
+
 }
 
 #[derive(Accounts)]
@@ -54,6 +60,15 @@ pub struct CreateSeparateCounter<'info> {
     ]
     pub counter: Account<'info, Counter>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct IncrementSeparateCounter<'info> { 
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    
+    #[account(mut)]
+    pub counter: Account<'info, Counter>,
 }
 
 

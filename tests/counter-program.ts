@@ -47,6 +47,22 @@ describe("counter-program", () => {
       .signers([keypair])
       .rpc();
   });
+  it("Increments separate counter", async () => {
+    const [counterAccountAddress, seed] = await getProgramDerivedAddress({
+      programAddress: address(program.programId.toString()),
+      seeds: [Buffer.from("counter"), keypair.publicKey.toBuffer()],
+    });
+    const tx = await program.methods
+      .incrementSeparateCounter()
+      .accounts({ counter: counterAccountAddress, signer: keypair.publicKey })
+      .signers([keypair])
+      .rpc();
+    const accountData = await program.account.counter.fetch(
+      counterAccountAddress
+    );
+    const binaryOne = new anchor.BN(11);
+    assert.ok(accountData.count.eq(binaryOne));
+  });
   it("Increments account", async () => {
     const tx = await program.methods.increment().accounts([counterPub]).rpc();
     const counterAccount = await program.account.counter.fetch(counterPub);
